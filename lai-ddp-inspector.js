@@ -69,6 +69,25 @@ Meteor.connection._stream.on('message', function (message) {
   }
 });
 
+var _livedata_result = Meteor.connection.constructor.prototype._livedata_result;
+
+console.log(_livedata_result);
+
+Meteor.connection.constructor.prototype._livedata_result = function(msg) {
+  console.info('_livedata_result called!');
+  if (!_.isEmpty(self._outstandingMethodBlocks)) {
+    var currentMethodBlock = self._outstandingMethodBlocks[0].methods;
+    var m;
+    for (var i = 0; i < currentMethodBlock.length; i++) {
+      m = currentMethodBlock[i];
+      if (m.methodId === msg.id)
+        break;
+    }
+
+    console.log(m);
+  }
+  _livedata_result.apply(this, arguments);
+};
 Blaze.registerHelper('ddpInspectorMessageStr', function () {
   return (Template.parentData(1) === 'constellation_plugin_ddp-inspector') ? colorize(this.messageStr) : this.messageStr;
 });
